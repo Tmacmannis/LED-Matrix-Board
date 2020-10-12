@@ -57,3 +57,15 @@ void testAnimation(int dur, int cur){
     	FastLED.show();
     }
 }
+
+
+void randomBlinks(int dur, int cur){ 
+  while(millis() - cur < dur){
+    fadeToBlackBy( matrixleds, NUMMATRIX, 10);
+    int pos = random16(NUMMATRIX);
+    matrixleds[pos] += CHSV( 50 + random8(64), 200, brightness);
+    matrix->show();
+    FastLED.delay(1000/120);
+  }
+}
+

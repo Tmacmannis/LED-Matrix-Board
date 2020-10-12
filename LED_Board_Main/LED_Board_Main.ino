@@ -11,6 +11,7 @@
 
 int brightness = 127;
 int lastBrightness = 0;
+int currentAnimation;
 
 cLEDMatrix<MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_TYPE> leds;
 
@@ -36,18 +37,27 @@ void setup() {
 
 void loop() {
 	checkForUpdates();
-	// testAnimation(random(5000, 20000), millis());
-//	showFireworks(0, random(3, 15));
-
-  fadeToBlackBy( matrixleds, NUMMATRIX, 10);
-  int pos = random16(NUMMATRIX);
-  matrixleds[pos] += CHSV( 50 + random8(64), 200, brightness);
-  matrix->show();
-  FastLED.delay(1000/120);
-
+  randomShowSelector();
 }
 
 void checkForUpdates(){
 	readDataFromPI();
 	showNewData();
+
+}
+
+void randomShowSelector(){
+
+    switch(random(1,4)){
+      case 1:
+          testAnimation(random(5000, 20000), millis());
+          break;
+      case 2:
+          showFireworks(0, random(3, 15));
+          break;
+      case 3:
+          randomBlinks(random(5000, 20000), millis());
+          break;
+    }
+
 }
