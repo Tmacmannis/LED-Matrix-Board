@@ -32,7 +32,7 @@ void readDataFromPI(){
   	}
 }
 
-void showNewData() {
+bool showNewData() {
     if (newData == true) {
         Serial.print("This just ins ... ");
 
@@ -58,5 +58,6 @@ void showNewData() {
         Serial.print("got the num: ");
         Serial.println(num);
         newData = false;
+        return true;
     }
 }

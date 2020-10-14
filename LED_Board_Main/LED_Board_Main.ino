@@ -14,6 +14,8 @@ int brightness = 127;
 int lastBrightness = 0;
 int currentAnimation;
 
+String textToPrint = "Jordan... pull me a mother fucking grav please..";
+
 cLEDMatrix<MATRIX_WIDTH, MATRIX_HEIGHT, MATRIX_TYPE> leds;
 
 
@@ -31,26 +33,29 @@ void setup() {
   while (!Serial) {;}
   FastLED.addLeds<WS2812B,PIN,RGB>(matrixleds, NUMMATRIX); 
   matrix->begin();
-  matrix->setTextWrap(false);
+  leds.setTextWrap(false);
   matrix->setBrightness(brightness);
-  matrix->setTextColor(colors[0]);
+  leds.setTextColor(colors[0]);
 }
 
 void loop() {
 	checkForUpdates();
 	randomShowSelector();
+	// testText();
 
 }
 
-void checkForUpdates(){
+bool checkForUpdates(){
 	readDataFromPI();
-	showNewData();
+	if(showNewData()){
+		return true;
+	}
 
 }
 
 void randomShowSelector(){
 
-    switch(random(1,5)){
+    switch(random(1,6)){
       case 1:
           testAnimation(random(5000, 20000), millis());
           break;
@@ -62,6 +67,9 @@ void randomShowSelector(){
           break;
       case 4:
           draw(random(5000, 20000), millis());
+          break;
+      case 5:
+          testText(random(5000, 20000), millis(), random(0,8), random(50, 100));
           break;
     }
 
