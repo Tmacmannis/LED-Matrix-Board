@@ -66,6 +66,7 @@ void randomBlinks(int dur, int cur){
     matrixleds[pos] += CHSV( 50 + random8(64), 200, brightness);
     matrix->show();
     FastLED.delay(1000/120);
+    checkForUpdates();
   }
 }
 

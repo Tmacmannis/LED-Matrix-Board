@@ -8,6 +8,7 @@
 #define MATRIX_HEIGHT 16
 #define NUMMATRIX (MATRIX_WIDTH*MATRIX_HEIGHT)
 #define MATRIX_TYPE    (MTX_MATRIX_TOP + MTX_MATRIX_LEFT + MTX_MATRIX_ROWS + MTX_MATRIX_PROGRESSIVE)
+#define NUM_LEDS MATRIX_WIDTH*MATRIX_HEIGHT
 
 int brightness = 127;
 int lastBrightness = 0;
@@ -37,7 +38,8 @@ void setup() {
 
 void loop() {
 	checkForUpdates();
-  randomShowSelector();
+	randomShowSelector();
+
 }
 
 void checkForUpdates(){
@@ -48,7 +50,7 @@ void checkForUpdates(){
 
 void randomShowSelector(){
 
-    switch(random(1,4)){
+    switch(random(1,5)){
       case 1:
           testAnimation(random(5000, 20000), millis());
           break;
@@ -57,6 +59,9 @@ void randomShowSelector(){
           break;
       case 3:
           randomBlinks(random(5000, 20000), millis());
+          break;
+      case 4:
+          draw(random(5000, 20000), millis());
           break;
     }
 

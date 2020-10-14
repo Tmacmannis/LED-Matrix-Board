@@ -1,51 +1,125 @@
-// byte rain[NUM_LEDS];
-// int speed = 1;
+// Copyright (2018) Soulmate Lighting, LLC
 
-// void rainAnimation(){
-// 	raininit();
+#ifndef RAIN_H
+#define RAIN_H
+#define NUM_RAINDROPS 12
+#define RAINDROP_DROP_LENGTH 16
 
+class Raindrop {
+public:
+  int x;
+  float y = -2;
 
-// }
+  Raindrop() {
+    x = random(0, MATRIX_WIDTH);
+  }
 
+  void start() {
+    x = random(0, MATRIX_WIDTH);
+    y = random(-2, 16);
+  }
 
-// void changepattern () {
-//   int rand1 = random16 (NUM_LEDS);
-//   int rand2 = random16 (NUM_LEDS);
-//   if ((rain[rand1] == 1) && (rain[rand2] == 0) )   //simple get two random dot 1 and 0 and swap it,
-//   {
-//     rain[rand1] = 0;  //this will not change total number of dots
-//     rain[rand2] = 1;
-//   }
-// } //changepattern
+  void reset(int newX) {
+    x = newX;
+    y = random(-15, -2);
+  }
 
-// void raininit() {                               //init array of dots. run once
-//   for (int i = 0; i < NUM_LEDS; i++) {
-//     if (random8(20) == 0) {
-//       rain[i] = 1;  //random8(20) number of dots. decrease for more dots
-//     }
-//     else {
-//       rain[i] = 0;
-//     }
-//   }
-// } //raininit
+  void draw(int8_t hue) {
+    int16_t thisHue = hue + x * 2;
 
-// void updaterain() {
-//   for (byte i = 0; i < MATRIX_WIDTH; i++) {
-//     for (byte j = 0; j < MATRIX_HEIGHT; j++) {
-//       byte layer = rain[XY(i, ((j + speed + random8(2) + MATRIX_HEIGHT) % MATRIX_HEIGHT))];   //fake scroll based on shift coordinate
-//       // random8(2) add glitchy look
-//       if (layer) {
-//         // leds[XY((MATRIX_WIDTH - 1) - i, (MATRIX_HEIGHT - 1) - j)] = CHSV(110, 255, brightness);
-//         leds.pixel((MATRIX_WIDTH - 1) - i, (MATRIX_HEIGHT - 1) - j) = CHSV(110, 255, brightness);
-//       }
-//     }
-//   }
+    // Draw head
+    int16_t index = leds.mXY(x,y);
+    if (y >= 0 && y < 16) {
+      matrixleds[index] = CHSV(thisHue, 255, brightness);
+    }
 
-//   speed ++;
-// //    leds.fadeToBlackBy(40);
-//   // blurRows(leds, MATRIX_WIDTH, MATRIX_HEIGHT, 16);      //if you want
-// } //updaterain
+    // Draw leading pixel
+    int16_t nextY = y - 1;
+    int16_t nextIndex = leds.mXY(x,nextY);
+    if (y >= 1 && y < 16) {
+      matrixleds[nextIndex] = CHSV(thisHue, 255, brightness);
+    }
 
-// uint16_t XY (uint8_t x, uint8_t y) {
-//   return (y * MATRIX_WIDTH + x);
-// }
+    // // Another leading pixel
+    // float nextnextY = y - 2;
+    // int16_t nextnextIndex = leds.mXY(x,nextnextY);
+    // if (y >= 2 && y < 16) {
+    //   matrixleds[nextnextIndex] =
+    //       CHSV(thisHue, 255, brightness);
+    // }
+  }
+
+  bool move() {
+    if (y >= 16)
+      return false;
+    y += 1;
+    return true;
+  }
+};
+
+namespace Rain {
+  int8_t hue = 0;
+  Raindrop raindrops[NUM_RAINDROPS] = {};
+
+  // Check there isn't a raindrop in the way...
+  bool checkNewRaindrop(int x) {
+    for (int i = 0; i < NUM_RAINDROPS; i++) {
+      Raindrop drop = raindrops[i];
+      // if (drop.x == x && drop.y > MATRIX_HEIGHT - RAINDROP_DROP_LENGTH) {
+      //   return false;
+      // }
+    }
+    return true;
+  }
+
+  // Start a raindrop at the top
+  void resetRaindrop(int raindropIndex) {
+    int x = random(0, MATRIX_WIDTH);
+    if (checkNewRaindrop(x)) {
+      raindrops[raindropIndex].reset(x);
+    }
+  }
+
+  bool started = false;
+
+  void draw() {
+    if (!started) {
+      started = true;
+      for (int16_t i = 0; i < NUM_RAINDROPS; i++) {
+        raindrops[i].start();
+      }
+    }
+
+    // Move all the raindrops. If they can't move, reset them
+    EVERY_N_MILLISECONDS(100) {
+      for (int16_t i = 0; i < NUM_RAINDROPS; i++) {
+        if (!raindrops[i].move()) {
+          resetRaindrop(i);
+        }
+      }
+    }
+
+    // Draw all the raindrops
+    for (int i = 0; i < NUM_RAINDROPS; i++) {
+      raindrops[i].draw(hue);
+    }
+
+    // Change colour
+    EVERY_N_MILLISECONDS(120) {
+      hue++;
+    }
+
+    // Fade tails
+    fadeToBlackBy(matrixleds, NUM_LEDS, 10);
+  }
+} // namespace Rain
+
+#endif
+
+void draw(int dur, int cur) {
+	while(millis() - cur < dur){
+	  Rain::draw();
+	  matrix->show();
+	  checkForUpdates();
+  	}
+}
