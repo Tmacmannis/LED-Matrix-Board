@@ -61,12 +61,15 @@ void testAnimation(int dur, int cur){
 
 void randomBlinks(int dur, int cur){ 
   while(millis() - cur < dur){
-    fadeToBlackBy( matrixleds, NUMMATRIX, 10);
-    int pos = random16(NUMMATRIX);
-    matrixleds[pos] += CHSV( 50 + random8(64), 200, brightness);
-    matrix->show();
-    FastLED.delay(1000/120);
-    checkForUpdates();
+    EVERY_N_MILLISECONDS(8) {
+      fadeToBlackBy( matrixleds, NUMMATRIX, 10);
+      int pos = random16(NUMMATRIX);
+      matrixleds[pos] += CHSV( 50 + random8(64), 200, brightness);
+      matrix->show();
+      // FastLED.delay(1000/120);
+      checkForUpdates();
+    }
+    
   }
 }
 

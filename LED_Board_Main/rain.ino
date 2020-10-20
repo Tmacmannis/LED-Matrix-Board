@@ -91,7 +91,7 @@ namespace Rain {
     }
 
     // Move all the raindrops. If they can't move, reset them
-    EVERY_N_MILLISECONDS(100) {
+    EVERY_N_MILLISECONDS(10) {
       for (int16_t i = 0; i < NUM_RAINDROPS; i++) {
         if (!raindrops[i].move()) {
           resetRaindrop(i);
