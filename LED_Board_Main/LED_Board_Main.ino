@@ -17,7 +17,7 @@
 
 int brightness = 255;
 int lastBrightness = 0;
-int currentAnimation;
+int currentProgram = 1;
 
 String textToPrint = "Jordan... pull me a mother fucking grav please..";
 
@@ -50,9 +50,9 @@ int frequencyBinsHorizontal[MATRIX_WIDTH] = {
    1,  1,  1,  1,  1,
    2,  2,  2,  2,  3,
    3,  3,  3,  3,  4,
-   5,  5,  6,  6,  6,
-   9,  9, 10, 10, 11,
-  15, 16, 17, 18, 19, 20, 22
+   10,  10,  12,  12,  12,
+   18,  18, 20, 20, 22,
+  30, 32, 34, 36, 38, 40, 42
 };
 
 
@@ -72,12 +72,12 @@ void setup() {
 
 void loop() {
 	checkForUpdates();
-	randomShowSelector();
-  // spectrum();
+	programManager();
 
-  // randomBlinks(random(5000, 20000), millis());
-  // draw(random(5000, 20000), millis());
+	// testText();
 
+	// randomShowSelector();
+	// spectrum(random(10000, 20000), millis());
 
 }
 
@@ -87,6 +87,34 @@ bool checkForUpdates(){
     return true;
   }
 
+}
+
+void programManager(){
+	switch(currentProgram){
+		case 1:
+			randomShowSelector();
+			break;
+    case 2:
+      spectrum(random(20000, 60000), millis());
+      break;
+    case 3:
+      testAnimation(random(5000, 15000), millis());
+      break;
+    case 4:
+      draw(random(5000, 20000), millis());
+      break;
+    case 5: 
+      break;
+    case 6:
+      testText();
+      break;
+    case 7: 
+      showFireworks(0, random(3, 15));
+      break;
+      
+		default:
+			randomShowSelector();
+	}
 }
 
 void randomShowSelector(){
@@ -105,13 +133,13 @@ void randomShowSelector(){
           draw(random(5000, 20000), millis());
           break;
       case 5:
-          testText(random(5000, 20000), millis(), random(0,8), random(50, 100));
+          testText();
           break;
       case 6:
-          spectrum(random(5000, 20000), millis());
+          spectrum(random(20000, 60000), millis());
           break;
       case 7:
-          spectrum(random(5000, 20000), millis());
+          spectrum(random(20000, 60000), millis());
           break;
     }
 

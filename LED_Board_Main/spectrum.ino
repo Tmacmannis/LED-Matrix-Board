@@ -7,11 +7,10 @@ void spectrum(int dur, int cur){
 		float level;
 		EVERY_N_MILLISECONDS(100){
 			checkForUpdates();
+			specHue += 5;
 		}
 
 		if (fft.available()) {
-	    // freqBin counts which FFT frequency data has been used,
-	    // starting at low frequency
 			freqBin = 0;
 
 			for (x=0; x < MATRIX_WIDTH; x++) {
@@ -31,12 +30,12 @@ void spectrum(int dur, int cur){
 						leds.drawPixel(x, y, CHSV(0, 0, 0));
 					}
 				}
-	      // increment the frequency bin count, so we display
-	      // low to higher frequency from left to right
 				freqBin = freqBin + frequencyBinsHorizontal[x];
 			}
-	    // after all pixels set, show them all at the same instant
-			FastLED.show();
+			EVERY_N_MILLISECONDS(1000/30) {
+				FastLED.show();
+			}
+			
 	    // Serial.println();
 		}
 	}
